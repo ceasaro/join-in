@@ -1,7 +1,6 @@
 from io import BytesIO
 
 from django.contrib.auth.models import AbstractUser
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -16,6 +15,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
         if not self.card_img:
             if self.email:
                 text = self.email.split('@')[0]
@@ -24,7 +24,6 @@ class User(AbstractUser):
                 img.save(image_bytes, format='PNG')
                 # breakpoint()
                 self.card_img.save(f"{text}.png", image_bytes)
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.email
