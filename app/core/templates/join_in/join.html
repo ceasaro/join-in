@@ -9,7 +9,7 @@
     <div class="user-grid">
     {% for user in users %}
         <div class="card user-card" >
-            <img class="card-img-top" src="https://picsum.photos/300/200" alt="Card image cap">
+            <img class="card-img" src="{{ user.card_img.url }}" alt="User img of {{ user.first_name }}">
             <div class="card-body">
                 <h5 class="card-title">{{ user.first_name }}</h5>
             </div>

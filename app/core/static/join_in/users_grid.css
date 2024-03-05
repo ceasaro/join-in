@@ -4,4 +4,13 @@ body {
 
 .user-card {
     float: left;
+    height: 160px;
+    width: 240px;
+    margin: 10px;
+}
+
+.user-card .card-img {
+    height: 100px;
+    margin: 5px;
+    width: 220px;
 }
