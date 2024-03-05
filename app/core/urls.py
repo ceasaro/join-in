@@ -20,7 +20,7 @@ from django.urls import path
 from core.views import HomeView, JoinView
 
 urlpatterns = [
-    path("join/", JoinView.as_view(), name="home"),
+    path("join/<slug:slug>", JoinView.as_view(), name="join-in-home"),
     path("", HomeView.as_view(), name="home"),
     path("admin/", admin.site.urls),
 ]

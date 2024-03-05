@@ -1,9 +1,9 @@
 {% extends "join_in/base.html" %}
 {% load static %}
 
-{#{% block extra_styling %}#}
-{#    <link rel="stylesheet" href="{% static 'join_in/users_grid.css' %}"/>#}
-{#{% endblock %}#}
+{% block page_header %}
+    <h1>{{ join_in.name }}</h1>
+{% endblock page_header %}
 
 {% block content %}
     <div class="user-grid">

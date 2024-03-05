@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from core.models import JoinIn
+
+
+class JoinInAdmin(admin.ModelAdmin):
+    list_display = ['slug']
+
+
+admin.site.register(JoinIn, JoinInAdmin)

@@ -20,13 +20,12 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col">
-            <h1>Join In</h1>
+            {% block page_header %}{% endblock page_header %}
         </div>
     </div>
     <div class="row">
         <div class="col">
-            {% block content %}
-            {% endblock content %}
+            {% block content %}{% endblock content %}
         </div>
     </div>
 
