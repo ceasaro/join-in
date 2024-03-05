@@ -9,7 +9,7 @@ __pycache__
 
 venv/*
 static/*
-local_settings*.py
+local_settings.py
 
 .pyc
 .pyo
