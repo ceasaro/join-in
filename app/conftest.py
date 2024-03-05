@@ -35,4 +35,4 @@ def lunch_join_in(user_cees, user_john):
     group = Group.objects.create(name="Lunch Test")
     group.user_set.add(user_cees)
     group.user_set.add(user_john)
-    return JoinIn.objects.create(slug="lunch-join-in", group=group)
+    return JoinIn.objects.create(slug="lunch-join-in", group=group, fee=2.0)
