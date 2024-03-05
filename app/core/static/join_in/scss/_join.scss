@@ -1,0 +1,14 @@
+
+.user-card {
+  background-color: $white;
+  float: left;
+  height: 160px;
+  width: 240px;
+  margin: 10px;
+
+  .card-img {
+    height: 100px;
+    margin: 5px;
+    width: 220px;
+  }
+}
