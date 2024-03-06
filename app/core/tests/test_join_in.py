@@ -20,3 +20,11 @@ def test_debit(lunch_join_in, user_cees):
     lunch_join_in.save()
     lunch_join_in.pay_fee(user_cees)
     assert lunch_join_in.debit(user_cees) == 6.5, "User must have higher debit"
+
+
+@pytest.mark.django_db
+def test_revert_payment(lunch_join_in, user_cees):
+    payment = lunch_join_in.pay_fee(user_cees)
+    assert lunch_join_in.debit(user_cees) == 2.0, "User must have a debit"
+    lunch_join_in.revert_payment(payment)
+    assert lunch_join_in.debit(user_cees) == 0.0, "Payment reverted, debit should be 0.0."

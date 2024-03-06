@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import models
 
+from core.exceptions import PaymentException
+
 User = get_user_model()
 
 
@@ -19,7 +21,12 @@ class JoinIn(BaseModel):
     fee = models.DecimalField(max_digits=10, decimal_places=4)
 
     def pay_fee(self, user):
-        Payment.objects.create(join_in=self, user=user, fee=self.fee)
+        return Payment.objects.create(join_in=self, user=user, fee=self.fee)
+
+    def revert_payment(self, payment):
+        if not self.payments.filter(id=payment.id).exists():
+            raise PaymentException(f"Cannot revert payment {payment}, it was not for JoinIn {self}")
+        payment.delete()
 
     def debit(self, user):
         fees = Payment.objects.filter(join_in=self, user=user).aggregate(models.Sum('fee'))
