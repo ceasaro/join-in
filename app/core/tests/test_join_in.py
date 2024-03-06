@@ -13,10 +13,10 @@ def test_join_in(lunch_join_in, user_cees, user_john):
 @pytest.mark.django_db
 def test_debit(lunch_join_in, user_cees):
     assert lunch_join_in.debit(user_cees) == 0.0, "User hasn't joined yet and should have no debit"
-    lunch_join_in.participated(user_cees)
+    lunch_join_in.pay_fee(user_cees)
     assert lunch_join_in.debit(user_cees) == 2.0, "User must have a debit"
-    lunch_join_in.participated(user_cees)
+    lunch_join_in.pay_fee(user_cees)
     lunch_join_in.fee = 2.5
     lunch_join_in.save()
-    lunch_join_in.participated(user_cees)
+    lunch_join_in.pay_fee(user_cees)
     assert lunch_join_in.debit(user_cees) == 6.5, "User must have higher debit"

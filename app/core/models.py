@@ -18,12 +18,12 @@ class JoinIn(BaseModel):
     slug = models.SlugField(max_length=20, null=False, blank=False)
     fee = models.DecimalField(max_digits=10, decimal_places=4)
 
-    def participated(self, user):
-        Participation.objects.create(join_in=self, user=user, fee=self.fee)
+    def pay_fee(self, user):
+        Payment.objects.create(join_in=self, user=user, fee=self.fee)
 
     def debit(self, user):
-        total_fees = Participation.objects.filter(join_in=self, user=user).aggregate(models.Sum('fee'))
-        return total_fees['fee__sum'] or 0.0
+        fees = Payment.objects.filter(join_in=self, user=user).aggregate(models.Sum('fee'))
+        return fees['fee__sum'] or 0.0
 
     @property
     def name(self):
@@ -34,7 +34,7 @@ class JoinIn(BaseModel):
         return self.group.user_set.all()
 
 
-class Participation(BaseModel):
-    join_in = models.ForeignKey(JoinIn, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+class Payment(BaseModel):
+    join_in = models.ForeignKey(JoinIn, on_delete=models.CASCADE, related_name="payments")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payments")
     fee = models.DecimalField(max_digits=10, decimal_places=4)
