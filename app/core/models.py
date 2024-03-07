@@ -42,10 +42,13 @@ class JoinIn(BaseModel):
         return self.group.name
 
     @property
-    def users(self, for_datetime=utc_now()):
+    def users(self):
+        return self.get_users(for_datetime=utc_now())
+
+    def get_users(self, for_datetime):
         users = (self.group.user_set.filter(
-            joined__join_in=self, joined__join_datetime__gte=for_datetime).filter(
-            models.Q(joined__left_datetime__lte=for_datetime)
+            joined__join_in=self, joined__join_datetime__lte=for_datetime).filter(
+            models.Q(joined__left_datetime__gte=for_datetime)
             | models.Q(joined__left_datetime__isnull=True)))
         for user in users:
             user.payed_for_period = True
