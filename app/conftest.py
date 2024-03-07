@@ -1,5 +1,6 @@
 import shutil
 
+import freezegun
 import pytest
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -32,7 +33,13 @@ def user_john():
 
 @pytest.fixture
 def lunch_join_in(user_cees, user_john):
-    group = Group.objects.create(name="Lunch Test")
-    group.user_set.add(user_cees)
-    group.user_set.add(user_john)
-    return JoinIn.objects.create(slug="lunch-join-in", group=group, fee=2.0)
+    with freezegun.freeze_time("2024-02-29"):
+        group = Group.objects.create(name="Lunch Test")
+        join_in = JoinIn.objects.create(slug="lunch-join-in", group=group, fee=2.0)
+
+    with freezegun.freeze_time("2024-03-10"):
+        join_in.join(user_cees)
+
+    with freezegun.freeze_time("2024-03-20"):
+        join_in.join(user_john)
+    return join_in

@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group
 from django.db import models
 
 from core.exceptions import PaymentException
+from core.utils.datetime_utils import utc_now
 
 User = get_user_model()
 
@@ -19,6 +20,10 @@ class JoinIn(BaseModel):
     group = models.OneToOneField(Group, on_delete=models.CASCADE, primary_key=True)
     slug = models.SlugField(max_length=20, null=False, blank=False)
     fee = models.DecimalField(max_digits=10, decimal_places=4)
+
+    def join(self, user):
+        self.group.user_set.add(user)
+        Membership.objects.create(join_in=self, user=user)
 
     def pay_fee(self, user):
         return Payment.objects.create(join_in=self, user=user, fee=self.fee)
@@ -37,8 +42,21 @@ class JoinIn(BaseModel):
         return self.group.name
 
     @property
-    def users(self):
-        return self.group.user_set.all()
+    def users(self, for_datetime=utc_now()):
+        users = (self.group.user_set.filter(
+            joined__join_in=self, joined__join_datetime__gte=for_datetime).filter(
+            models.Q(joined__left_datetime__lte=for_datetime)
+            | models.Q(joined__left_datetime__isnull=True)))
+        for user in users:
+            user.payed_for_period = True
+        return users
+
+
+class Membership(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='joined')
+    join_in = models.ForeignKey(JoinIn, on_delete=models.CASCADE, related_name='joined')
+    join_datetime = models.DateTimeField(auto_now_add=True)
+    left_datetime = models.DateTimeField(null=True, blank=True)
 
 
 class Payment(BaseModel):

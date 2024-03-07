@@ -3,4 +3,5 @@ django-compressor==4.4
 django-extensions==3.2.3
 django-libsass==0.9
 pytest-django==4.8.0
+pytest-freezegun==0.4.2
 pytest==8.0.1
