@@ -1,8 +1,10 @@
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import models
 
-from core.exceptions import PaymentException
+from core.exceptions import TransactionException
 from core.utils.datetime_utils import utc_now
 
 User = get_user_model()
@@ -26,16 +28,17 @@ class JoinIn(BaseModel):
         Membership.objects.create(join_in=self, user=user)
 
     def pay_fee(self, user):
-        return Payment.objects.create(join_in=self, user=user, fee=self.fee)
+        return Loan.objects.create(join_in=self, user=user, amount=self.fee)
 
-    def revert_payment(self, payment):
-        if not self.payments.filter(id=payment.id).exists():
-            raise PaymentException(f"Cannot revert payment {payment}, it was not for JoinIn {self}")
-        payment.delete()
+    def revert_loan(self, loan):
+        if not self.loans.filter(id=loan.id).exists():
+            raise TransactionException(f"Cannot revert loan {loan}, it was not for JoinIn {self}")
+        loan.delete()
 
-    def debit(self, user):
-        fees = Payment.objects.filter(join_in=self, user=user).aggregate(models.Sum('fee'))
-        return fees['fee__sum'] or 0.0
+    def balance(self, user):
+        loans = Loan.objects.filter(join_in=self, user=user).aggregate(models.Sum('amount'))
+        payments = Decimal(0.0)
+        return payments - (loans['amount__sum'] or Decimal(0.0))
 
     @property
     def name(self):
@@ -62,7 +65,7 @@ class Membership(models.Model):
     left_datetime = models.DateTimeField(null=True, blank=True)
 
 
-class Payment(BaseModel):
-    join_in = models.ForeignKey(JoinIn, on_delete=models.CASCADE, related_name="payments")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payments")
-    fee = models.DecimalField(max_digits=10, decimal_places=4)
+class Loan(BaseModel):
+    join_in = models.ForeignKey(JoinIn, on_delete=models.CASCADE, related_name="loans")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="loans")
+    amount = models.DecimalField(max_digits=10, decimal_places=4)

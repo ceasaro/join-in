@@ -28,22 +28,22 @@ def test_membership(for_date, user_count, mesage, lunch_join_in, user_cees, user
 
 
 @pytest.mark.django_db
-def test_debit(lunch_join_in, user_cees):
-    assert lunch_join_in.debit(user_cees) == 0.0, "User hasn't joined yet and should have no debit"
+def test_balance(lunch_join_in, user_cees):
+    assert lunch_join_in.balance(user_cees) == 0.0, "User hasn't joined yet and should have no debit"
     lunch_join_in.pay_fee(user_cees)
-    assert lunch_join_in.debit(user_cees) == 2.0, "User must have a debit"
+    assert lunch_join_in.balance(user_cees) == -2.0, "User must have a debit"
     lunch_join_in.pay_fee(user_cees)
     lunch_join_in.fee = 2.5
     lunch_join_in.save()
     lunch_join_in.pay_fee(user_cees)
-    assert lunch_join_in.debit(user_cees) == 6.5, "User must have higher debit"
+    assert lunch_join_in.balance(user_cees) == -6.5, "User must have higher debit"
 
 
 @pytest.mark.django_db
-def test_revert_payment(lunch_join_in, user_cees):
+def test_revert_loan(lunch_join_in, user_cees):
     payment = lunch_join_in.pay_fee(user_cees)
-    assert lunch_join_in.debit(user_cees) == 2.0, "User must have a debit"
-    lunch_join_in.revert_payment(payment)
-    assert lunch_join_in.debit(user_cees) == 0.0, "Payment reverted, debit should be 0.0."
+    assert lunch_join_in.balance(user_cees) == -2.0, "User must have a debit"
+    lunch_join_in.revert_loan(payment)
+    assert lunch_join_in.balance(user_cees) == 0.0, "Payment reverted, debit should be 0.0."
 
 

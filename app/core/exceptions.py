@@ -2,5 +2,5 @@ class JoinInException(Exception):
     pass
 
 
-class PaymentException(JoinInException):
+class TransactionException(JoinInException):
     pass
