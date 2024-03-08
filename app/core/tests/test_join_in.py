@@ -37,6 +37,8 @@ def test_balance(lunch_join_in, user_cees):
     lunch_join_in.save()
     lunch_join_in.add_fee(user_cees)
     assert lunch_join_in.balance(user_cees) == -6.5, "User must have higher debit"
+    lunch_join_in.payment(user_cees, 10)
+    assert lunch_join_in.balance(user_cees) == 3.5, "User paid and have some credit now"
 
 
 @pytest.mark.django_db

@@ -31,14 +31,23 @@ class JoinIn(BaseModel):
         return Loan.objects.create(join_in=self, user=user, amount=self.fee)
 
     def revert_loan(self, loan):
-        if not self.loans.filter(id=loan.id).exists():
+        if loan.join_in is not self:
             raise TransactionException(f"Cannot revert loan {loan}, it was not for JoinIn {self}")
         loan.delete()
 
+    def payment(self, user, amount):
+        return Payment.objects.create(join_in=self, user=user, amount=amount)
+
+    def revert_payment(self, payment):
+        if payment.join_in is not self:
+            raise TransactionException(f"Cannot revert payment {payment},"
+                                       f" it was not for JoinIn {self}")
+        payment.delete()
+
     def balance(self, user):
         loans = Loan.objects.filter(join_in=self, user=user).aggregate(models.Sum('amount'))
-        payments = Decimal(0.0)
-        return payments - (loans['amount__sum'] or Decimal(0.0))
+        payments = Payment.objects.filter(join_in=self, user=user).aggregate(models.Sum('amount'))
+        return (payments['amount__sum'] or Decimal(0.0)) - (loans['amount__sum'] or Decimal(0.0))
 
     @property
     def name(self):
@@ -68,4 +77,10 @@ class Membership(models.Model):
 class Loan(BaseModel):
     join_in = models.ForeignKey(JoinIn, on_delete=models.CASCADE, related_name="loans")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="loans")
+    amount = models.DecimalField(max_digits=10, decimal_places=4)
+
+
+class Payment(BaseModel):
+    join_in = models.ForeignKey(JoinIn, on_delete=models.CASCADE, related_name="payments")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payments")
     amount = models.DecimalField(max_digits=10, decimal_places=4)
