@@ -27,7 +27,7 @@ class JoinIn(BaseModel):
         self.group.user_set.add(user)
         Membership.objects.create(join_in=self, user=user)
 
-    def pay_fee(self, user):
+    def add_fee(self, user):
         return Loan.objects.create(join_in=self, user=user, amount=self.fee)
 
     def revert_loan(self, loan):
