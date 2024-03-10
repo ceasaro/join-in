@@ -1,6 +1,10 @@
 {% extends "join_in/base.html" %}
 {% load static %}
 
+{% block extra_js %}
+    <script src="{% static 'join_in/js/join.js' %}"></script>
+
+{% endblock %}
 {% block page_header %}
     <h1>{{ join_in.name }}</h1>
 {% endblock page_header %}
