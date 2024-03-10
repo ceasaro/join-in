@@ -62,8 +62,6 @@ class JoinIn(BaseModel):
             joined__join_in=self, joined__join_datetime__lte=for_datetime).filter(
             models.Q(joined__left_datetime__gte=for_datetime)
             | models.Q(joined__left_datetime__isnull=True)))
-        for user in users:
-            user.payed_for_period = True
         return users
 
 

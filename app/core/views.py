@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.http import Http404
 from django.views.generic import TemplateView
 
 from core.models import JoinIn
+from core.utils.datetime_utils import utc_now
 
 User = get_user_model()
 
@@ -29,6 +29,11 @@ class JoinView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['join_in'] = self.join_in
-        context['users'] = self.join_in.users
+        for_datetime = utc_now()
+        users = self.join_in.get_users(for_datetime)
+        for user in users:
+            user.joined_period = user.loans.filter(join_in=self.join_in, created__day=for_datetime.day).exists()
+            user.balance = self.join_in.balance(user)
+        context['users'] = users
         # context['users'] = User.objects.all()
         return context

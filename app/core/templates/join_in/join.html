@@ -8,10 +8,11 @@
 {% block content %}
     <div class="user-grid">
     {% for user in users %}
-        <div class="card user-card" >
+        <div class="card user-card {% if user.joined_period %}joined{% endif %}" >
             <img class="card-img" src="{{ user.card_img.url }}" alt="User img of {{ user.first_name }}">
             <div class="card-body">
                 <h5 class="card-title">{{ user.first_name }}</h5>
+                <span class="balance {% if user.balance < 0 %}text-danger{% endif %}">€ {{ user.balance|floatformat:"2g" }}</span>
             </div>
         </div>
     {% endfor %}
