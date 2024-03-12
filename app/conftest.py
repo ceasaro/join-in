@@ -35,7 +35,8 @@ def user_john():
 def lunch_join_in(user_cees, user_john):
     with freezegun.freeze_time("2024-02-29"):
         group = Group.objects.create(name="Lunch Test")
-        join_in = JoinIn.objects.create(slug="lunch-join-in", group=group, fee=2.0)
+        join_in = JoinIn.objects.create(slug="lunch-join-in", group=group, fee=2.0,
+                                        membership_period=JoinIn.DAILY)
 
     with freezegun.freeze_time("2024-03-10"):
         join_in.join(user_cees)

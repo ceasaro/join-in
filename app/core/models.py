@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import models
 
-from core.exceptions import TransactionException
+from core.exceptions import TransactionException, JoinInException
 from core.utils.datetime_utils import utc_now
 
 User = get_user_model()
@@ -19,15 +19,21 @@ class BaseModel(models.Model):
 
 
 class JoinIn(BaseModel):
+    DAILY = 'daily'
+    PERIOD_CHOICES = [(DAILY, 'Daily')]
     group = models.OneToOneField(Group, on_delete=models.CASCADE, primary_key=True)
     slug = models.SlugField(max_length=20, null=False, blank=False)
     fee = models.DecimalField(max_digits=10, decimal_places=4)
+    membership_period = models.CharField(choices=PERIOD_CHOICES, default=DAILY, max_length=50)
 
     def join(self, user):
         self.group.user_set.add(user)
         Membership.objects.create(join_in=self, user=user)
 
-    def add_fee(self, user):
+    def add_fee(self, user, for_datetime=utc_now()):
+        if self.membership_period == self.DAILY:
+            if Loan.objects.filter(join_in=self, user=user, created__day=for_datetime.day).exists():
+                raise JoinInException(f"{user} already added the fee for this period")
         return Loan.objects.create(join_in=self, user=user, amount=self.fee)
 
     def revert_loan(self, loan):
