@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from django.utils.dateparse import parse_date
+from django.utils.dateparse import parse_datetime
 
 
 def utc_now():
@@ -81,7 +81,7 @@ def str_to_datetime(date_str: str) -> datetime:
     Returns:
         datetime: Returns a `datetime.datetime` object
     """
-    return parse_date(date_str)
+    return parse_datetime(date_str).replace(tzinfo=timezone.utc)
 
 
 def str_to_timestamp(date_str: str) -> float:

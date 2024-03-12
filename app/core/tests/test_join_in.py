@@ -15,16 +15,16 @@ def test_join_in_ok(lunch_join_in, user_cees, user_john):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("for_date, user_count, mesage", [
+@pytest.mark.parametrize("for_date, user_count, message", [
     ('2024-03-09', 0, "no users joined yet"),
     ('2024-03-10', 1, "Only user cees joined"),
     ('2024-03-19', 1, "Only user cees joined"),
     ('2024-03-20', 2, "Both user cees and john joined"),
 ])
-def test_membership(for_date, user_count, mesage, lunch_join_in, user_cees, user_john):
+def test_membership(for_date, user_count, message, lunch_join_in, user_cees, user_john):
     assert lunch_join_in.name == "Lunch Test"
     assert lunch_join_in.get_users(
-        for_datetime=str_to_datetime(for_date)).count() == user_count, f"On {for_date}, {mesage}"
+        for_datetime=str_to_datetime(for_date)).count() == user_count, f"On {for_date}, {message}"
 
 
 @pytest.mark.django_db
@@ -40,6 +40,13 @@ def test_balance(lunch_join_in, user_cees):
     lunch_join_in.payment(user_cees, 10)
     assert lunch_join_in.balance(user_cees) == 3.5, "User paid and have some credit now"
 
+#
+# @pytest.mark.django_db
+# def test_join_within_period(lunch_join_in, user_cees):
+#     lunch_join_in.add_fee(user_cees)
+#     with pytest.raises(JoinInException, match=f"{user_cees} already joined this period"):
+#         lunch_join_in.add_fee(user_cees)
+#
 
 @pytest.mark.django_db
 def test_revert_loan(lunch_join_in, user_cees):
