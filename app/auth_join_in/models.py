@@ -25,5 +25,8 @@ class User(AbstractUser):
                 # breakpoint()
                 self.card_img.save(f"{text}.png", image_bytes)
 
+    def has_joined(self, join_in, for_datetime):
+        self.loans.filter(join_in=join_in, created__day=for_datetime.day).exists()
+
     def __str__(self):
         return self.email

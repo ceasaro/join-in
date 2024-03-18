@@ -17,12 +17,16 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include, re_path
+from django.views.generic import RedirectView
 from django.views.static import serve
 
-from core.views import HomeView, JoinView
+from core.views import HomeView, JoinView, UserJoinJSONView
+
 
 urlpatterns = [
-    path("join/", JoinView.as_view(), name="join"),
+    path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico', permanent=True)),
+    path("<slug>/users/<user_email>", UserJoinJSONView.as_view(), name="user-join"),
+    path("<slug>", JoinView.as_view(), name="join"),
     path("", HomeView.as_view(), name="home"),
     path("", include("core.urls")),
     path("admin/", admin.site.urls),

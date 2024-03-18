@@ -44,6 +44,11 @@
         crossorigin="anonymous"></script>
 <script src="{{ static }}/"></script>
 <script src="{% static 'js_libs/jquery-3.7.1.min.js' %}"></script>
-{% block extra_js %}{% endblock %}
+<script>
+$(document).ready(function() {
+  {% block jquery_ready %}{% endblock jquery_ready %}
+});
+</script>
+{% block extra_js %}{% endblock extra_js %}
 </body>
 </html>

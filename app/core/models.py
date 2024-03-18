@@ -30,6 +30,12 @@ class JoinIn(BaseModel):
         self.group.user_set.add(user)
         Membership.objects.create(join_in=self, user=user)
 
+    def toggle_fee(self, user, for_datetime=utc_now()):
+        try:
+            self.add_fee(user, for_datetime)
+        except JoinInException:
+            self.revert_loan(Loan.objects.get(join_in=self, user=user, created__day=for_datetime.day))
+
     def add_fee(self, user, for_datetime=utc_now()):
         if self.membership_period == self.DAILY:
             if Loan.objects.filter(join_in=self, user=user, created__day=for_datetime.day).exists():
@@ -37,7 +43,7 @@ class JoinIn(BaseModel):
         return Loan.objects.create(join_in=self, user=user, amount=self.fee)
 
     def revert_loan(self, loan):
-        if loan.join_in is not self:
+        if loan.join_in != self:
             raise TransactionException(f"Cannot revert loan {loan}, it was not for JoinIn {self}")
         loan.delete()
 
