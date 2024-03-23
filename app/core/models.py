@@ -56,9 +56,9 @@ class JoinIn(BaseModel):
                                        f" it was not for JoinIn {self}")
         payment.delete()
 
-    def balance(self, user):
-        loans = Loan.objects.filter(join_in=self, user=user).aggregate(models.Sum('amount'))
-        payments = Payment.objects.filter(join_in=self, user=user).aggregate(models.Sum('amount'))
+    def balance(self, user, for_datetime):
+        loans = Loan.objects.filter(join_in=self, user=user, created__lte=for_datetime).aggregate(models.Sum('amount'))
+        payments = Payment.objects.filter(join_in=self, user=user, created__lte=for_datetime).aggregate(models.Sum('amount'))
         return (payments['amount__sum'] or Decimal(0.0)) - (loans['amount__sum'] or Decimal(0.0))
 
     @property

@@ -50,7 +50,7 @@ class JoinView(JoinInBaseView):
         users = self.join_in.get_users(for_datetime)
         for user in users:
             user.joined_period = user.has_joined(self.join_in, for_datetime)
-            user.balance = self.join_in.balance(user)
+            user.balance = self.join_in.balance(user, for_datetime)
         context['users'] = users
         return context
 
