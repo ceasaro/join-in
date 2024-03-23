@@ -1,11 +1,10 @@
 $(".user-card").on("click", function () {
-  var $userCard = $(this);
+  let $userCard = $(this);
   $userCard.toggleClass("joined",
     function (index, currentclass) {
       debugger;
     }
   );
-  console.info($userCard.data("user-email"));
   $.ajax({
     type: "GET",
     url: `test_join_in/users/${$userCard.data("user-email")}`,
