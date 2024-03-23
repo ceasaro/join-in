@@ -1,23 +1,55 @@
 {% extends "join_in/base.html" %}
 {% load static %}
 
- {% block jquery_ready %}
+
+{% block extra_js %}
+    <script>
+        let for_timestamp = {{ for_timestamp }};
+        const for_date = new Date(for_timestamp);
+    </script>
+{% endblock extra_js %}
+
+
+{% block jquery_ready %}
     $.getScript("{% static 'join_in/js/join.js' %}");
- {% endblock jquery_ready %}
+{% endblock jquery_ready %}
+
+
 {% block page_header %}
-    <h1>{{ join_in.name }}</h1>
+    <div class="row">
+        <div class="col-6">
+            <h1>{{ join_in.name }}</h1>
+        </div>
+        <div class="col-6 dates">
+            <form action="{{ join_in.slug }}" id="join-in-form">
+                <input type="hidden" value="{{ for_timestamp }}" id="for_timestamp_input" name="for_timestamp" />
+                <a href="#" class="submit-join-in-form day-before">
+                    <i class="bi bi-arrow-left" ></i>
+                </a>
+                <span id="for_date"></span>
+                <a href="#" class="submit-join-in-form day-after">
+                    <i class="bi bi-arrow-right submit-join-in-form"></i>
+                </a>
+            </form>
+        </div>
+
+    </div>
 {% endblock page_header %}
+
 
 {% block content %}
     <div class="user-grid">
-    {% for user in users %}
-        <div class="card user-card {% if user.joined_period %}joined{% endif %}" data-user-email="{{ user.email }}">
-            <img class="card-img" src="{{ user.card_img.url }}" alt="User img of {{ user.first_name }}">
-            <div class="card-body">
-                <h5 class="card-title">{{ user.first_name }}</h5>
-                <span class="balance {% if user.balance < 0 %}text-danger{% endif %}">€ {{ user.balance|floatformat:"2g" }}</span>
+        {% for user in users %}
+            <div class="card user-card {% if user.joined_period %}joined{% endif %}"
+                 data-user-email="{{ user.email }}">
+                <img class="card-img" src="{{ user.card_img.url }}"
+                     alt="User img of {{ user.first_name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ user.first_name }}</h5>
+                    <span class="balance {% if user.balance < 0 %}text-danger{% endif %}">€ {{ user.balance|floatformat:"2g" }}</span>
+                </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
     </div>
 {% endblock content %}
+

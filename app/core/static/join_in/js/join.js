@@ -1,3 +1,4 @@
+let dayInMillis = 24 * 60 * 60 * 1000;
 $(".user-card").on("click", function () {
   let $userCard = $(this);
   $userCard.toggleClass("joined",
@@ -21,3 +22,17 @@ $(".user-card").on("click", function () {
     dataType: "json"
   });
 });
+
+$( ".submit-join-in-form" ).on( "click", function() {
+  let $submitButton = $(this);
+  let $forTimestampInput = $('#for_timestamp_input');
+  let currentTimestamp = parseInt($forTimestampInput.val());
+  if ($submitButton.hasClass('day-before')) {
+    $forTimestampInput.val(currentTimestamp - dayInMillis);
+  } else if  ($submitButton.hasClass('day-after')) {
+    $forTimestampInput.val(currentTimestamp + dayInMillis);
+  }
+  $( "#join-in-form" ).trigger( "submit" );
+} );
+
+$("#for_date").html(for_date.toDateString());

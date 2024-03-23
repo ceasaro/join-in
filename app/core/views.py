@@ -1,9 +1,11 @@
+from dateutil.parser import ParserError
 from django.contrib.auth import get_user_model
 from django.views.generic import TemplateView
 
 from core.mixins import JSONResponseMixin
 from core.models import JoinIn
-from core.utils.datetime_utils import utc_now
+from core.utils.datetime_utils import utc_now, str_to_datetime, datetime_to_millis, \
+    millis_to_datetime
 
 User = get_user_model()
 
@@ -39,14 +41,17 @@ class JoinView(JoinInBaseView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        try:
+            for_datetime = millis_to_datetime(int(self.request.GET.get('for_timestamp')))
+        except (ParserError, TypeError):
+            for_datetime = utc_now()
         context['join_in'] = self.join_in
-        for_datetime = utc_now()
+        context['for_timestamp'] = datetime_to_millis(for_datetime)
         users = self.join_in.get_users(for_datetime)
         for user in users:
             user.joined_period = user.has_joined(self.join_in, for_datetime)
             user.balance = self.join_in.balance(user)
         context['users'] = users
-        # context['users'] = User.objects.all()
         return context
 
 

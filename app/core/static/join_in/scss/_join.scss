@@ -1,5 +1,11 @@
 @import "variables";
 
+.dates {
+  padding-top: 12px;
+  font-size: large;
+  //border: 1px solid #f2800a;
+}
+
 .card.user-card {
   background-color: $white;
   border: 5px solid $light-gray;
