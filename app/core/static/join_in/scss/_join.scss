@@ -4,6 +4,14 @@
   padding-top: 12px;
   font-size: large;
   //border: 1px solid #f2800a;
+  #for_date {
+    display: inline-block;
+    text-align: center;
+    width: 200px;
+  }
+  #for_today {
+    margin-left: 20px;
+  }
 }
 
 .card.user-card {

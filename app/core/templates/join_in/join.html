@@ -6,6 +6,7 @@
     <script>
         let for_timestamp = {{ for_timestamp }};
         const for_date = new Date(for_timestamp);
+        const today = new Date();
     </script>
 {% endblock extra_js %}
 
@@ -30,6 +31,7 @@
                 <a href="#" class="submit-join-in-form day-after">
                     <i class="bi bi-arrow-right submit-join-in-form"></i>
                 </a>
+                <a href="#" class="submit-join-in-form for-today">Today</a>
             </form>
         </div>
 

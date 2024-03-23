@@ -43,7 +43,7 @@ class JoinView(JoinInBaseView):
         context = super().get_context_data(**kwargs)
         try:
             for_datetime = millis_to_datetime(int(self.request.GET.get('for_timestamp')))
-        except (ParserError, TypeError):
+        except (ParserError, TypeError, ValueError):
             for_datetime = utc_now()
         context['join_in'] = self.join_in
         context['for_timestamp'] = datetime_to_millis(for_datetime)
