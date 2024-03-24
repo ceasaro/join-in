@@ -6,14 +6,25 @@ $(".user-card").on("click", function () {
     type: "GET",
     url: `test_join_in/users/${$userCard.data("user-email")}`,
     success: function (data, textStatus, jqXHR) {
-      let balanceElement = $userCard.find(".card-body .balance");
-      let balance = Number(data.user.balance);
-      balanceElement.html(`€ ${balance.toFixed(2)}`);
-      if (balance < 0) {
-        balanceElement.addClass("text-danger");
+      // update user balance
+      let $userBalanceElement = $userCard.find(".card-body .balance");
+      let user_balance = Number(data.user.balance);
+      $userBalanceElement.html(`€ ${user_balance.toFixed(2)}`);
+      if (user_balance < 0) {
+        $userBalanceElement.addClass("text-danger");
       } else {
-        balanceElement.removeClass("text-danger");
+        $userBalanceElement.removeClass("text-danger");
       }
+      // update join_in balance
+      let $balanceElement = $("#join_in_balance .balance");
+      let balance = Number(data.join_in.balance);
+      $balanceElement.html(`€ ${balance.toFixed(2)}`);
+      if (balance < 0) {
+        $balanceElement.addClass("text-danger");
+      } else {
+        $balanceElement.removeClass("text-danger");
+      }
+
     },
     dataType: "json"
   });

@@ -23,7 +23,9 @@
         </div>
         <div class="col-2 balance">
 
-            <span>Balance: {% include "../includes/amount.html" with amount=join_in_balance %}</span>
+            <span id="join_in_balance">
+                Balance: {% include "../includes/amount.html" with amount=join_in_balance %}
+            </span>
         </div>
         <div class="col-5 dates">
             <form action="{{ join_in.slug }}" id="join-in-form">

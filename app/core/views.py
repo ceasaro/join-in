@@ -75,5 +75,8 @@ class UserJoinJSONView(JSONResponseMixin, JoinInBaseView):
                 'email': user.email,
                 'balance': self.join_in.balance(for_datetime, user),
                 'joined_period': user.has_joined(self.join_in, for_datetime)
+            },
+            'join_in': {
+                'balance': self.join_in.balance(for_datetime)
             }
         }
