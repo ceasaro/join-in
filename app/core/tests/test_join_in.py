@@ -45,7 +45,7 @@ def test_balance(lunch_join_in, user_cees):
     d_2024_03_10 = str_to_datetime("2024-03-10")
     lunch_join_in.fee = 2.5
     lunch_join_in.save()
-    lunch_join_in.add_fee(user_cees, d_2024_03_10)
+    lunch_join_in.add_fee(user_cees, str_to_datetime("2024-03-10 12:35"))
     assert lunch_join_in.balance(user_cees, d_2024_03_10) == -6.5, "User must have higher debit"
     with freezegun.freeze_time(d_2024_03_10):
         lunch_join_in.payment(user_cees, 10)

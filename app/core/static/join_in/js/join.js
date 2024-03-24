@@ -1,11 +1,7 @@
 let dayInMillis = 24 * 60 * 60 * 1000;
 $(".user-card").on("click", function () {
   let $userCard = $(this);
-  $userCard.toggleClass("joined",
-    function (index, currentclass) {
-      debugger;
-    }
-  );
+  $userCard.toggleClass("joined");
   $.ajax({
     type: "GET",
     url: `test_join_in/users/${$userCard.data("user-email")}`,
@@ -26,7 +22,6 @@ $(".user-card").on("click", function () {
 $(".submit-join-in-form").on("click", function () {
   let $submitButton = $(this);
   let $forTimestampInput = $("#for_timestamp_input");
-  debugger;
   if ($submitButton.hasClass("for-today")) {
     $forTimestampInput.val('');
   } else {

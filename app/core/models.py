@@ -57,8 +57,8 @@ class JoinIn(BaseModel):
         payment.delete()
 
     def balance(self, user, for_datetime):
-        loans = Loan.objects.filter(join_in=self, user=user, datetime__lte=for_datetime).aggregate(models.Sum('amount'))
-        payments = Payment.objects.filter(join_in=self, user=user, datetime__lte=for_datetime).aggregate(models.Sum('amount'))
+        loans = Loan.objects.filter(join_in=self, user=user, datetime__day__lte=for_datetime.day).aggregate(models.Sum('amount'))
+        payments = Payment.objects.filter(join_in=self, user=user, datetime__day__lte=for_datetime.day).aggregate(models.Sum('amount'))
         return (payments['amount__sum'] or Decimal(0.0)) - (loans['amount__sum'] or Decimal(0.0))
 
     @property
