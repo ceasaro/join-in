@@ -34,9 +34,10 @@ def test_membership(for_date, user_count, message, lunch_join_in, user_cees, use
 def test_balance(lunch_join_in, user_cees):
     # day 8 March
     d_2024_03_08 = str_to_datetime("2024-03-08")
-    assert lunch_join_in.balance(user_cees, d_2024_03_08) == 0.0, "User hasn't joined yet and should have no debit"
+    assert lunch_join_in.balance(d_2024_03_08,
+                                 user_cees) == 0.0, "User hasn't joined yet and should have no debit"
     lunch_join_in.add_fee(user_cees, d_2024_03_08)
-    assert lunch_join_in.balance(user_cees, d_2024_03_08) == -2.0, "User must have a debit"
+    assert lunch_join_in.balance(d_2024_03_08, user_cees) == -2.0, "User must have a debit"
 
     # day 9 March
     lunch_join_in.add_fee(user_cees, str_to_datetime("2024-03-09"))
@@ -46,10 +47,11 @@ def test_balance(lunch_join_in, user_cees):
     lunch_join_in.fee = 2.5
     lunch_join_in.save()
     lunch_join_in.add_fee(user_cees, str_to_datetime("2024-03-10 12:35"))
-    assert lunch_join_in.balance(user_cees, d_2024_03_10) == -6.5, "User must have higher debit"
+    assert lunch_join_in.balance(d_2024_03_10, user_cees) == -6.5, "User must have higher debit"
     with freezegun.freeze_time(d_2024_03_10):
         lunch_join_in.payment(user_cees, 10)
-    assert lunch_join_in.balance(user_cees, d_2024_03_10) == 3.5, "User paid and have some credit now"
+    assert lunch_join_in.balance(d_2024_03_10,
+                                 user_cees) == 3.5, "User paid and have some credit now"
 
 
 @pytest.mark.django_db
@@ -62,8 +64,9 @@ def test_join_within_period(lunch_join_in, user_cees):
 @pytest.mark.django_db
 def test_revert_loan(lunch_join_in, user_cees):
     payment = lunch_join_in.add_fee(user_cees, datetime.now())
-    assert lunch_join_in.balance(user_cees, datetime.now()) == -2.0, "User must have a debit"
+    assert lunch_join_in.balance(datetime.now(), user_cees) == -2.0, "User must have a debit"
     lunch_join_in.revert_loan(payment)
-    assert lunch_join_in.balance(user_cees, datetime.now()) == 0.0, "Payment reverted, debit should be 0.0."
+    assert lunch_join_in.balance(datetime.now(),
+                                 user_cees) == 0.0, "Payment reverted, debit should be 0.0."
 
 
