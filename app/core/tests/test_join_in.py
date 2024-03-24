@@ -31,13 +31,14 @@ def test_membership(for_date, user_count, message, lunch_join_in, user_cees, use
 
 
 @pytest.mark.django_db
-def test_balance(lunch_join_in, user_cees):
+def test_balance(lunch_join_in, user_cees, user_john):
     # day 8 March
     d_2024_03_08 = str_to_datetime("2024-03-08")
     assert lunch_join_in.balance(d_2024_03_08,
                                  user_cees) == 0.0, "User hasn't joined yet and should have no debit"
     lunch_join_in.add_fee(user_cees, d_2024_03_08)
-    assert lunch_join_in.balance(d_2024_03_08, user_cees) == -2.0, "User must have a debit"
+    lunch_join_in.add_fee(user_john, d_2024_03_08)
+    assert lunch_join_in.balance(d_2024_03_08, user_cees) == -2.0, "Cees must have a debit"
 
     # day 9 March
     lunch_join_in.add_fee(user_cees, str_to_datetime("2024-03-09"))
@@ -47,11 +48,12 @@ def test_balance(lunch_join_in, user_cees):
     lunch_join_in.fee = 2.5
     lunch_join_in.save()
     lunch_join_in.add_fee(user_cees, str_to_datetime("2024-03-10 12:35"))
-    assert lunch_join_in.balance(d_2024_03_10, user_cees) == -6.5, "User must have higher debit"
+    assert lunch_join_in.balance(d_2024_03_10, user_cees) == -6.5, " Cees must have higher debit"
     with freezegun.freeze_time(d_2024_03_10):
         lunch_join_in.payment(user_cees, 10)
     assert lunch_join_in.balance(d_2024_03_10,
-                                 user_cees) == 3.5, "User paid and have some credit now"
+                                 user_cees) == 3.5, "Cees paid and have some credit now"
+    assert lunch_join_in.balance(d_2024_03_10) == 1.5
 
 
 @pytest.mark.django_db

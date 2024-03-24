@@ -18,10 +18,14 @@
 
 {% block page_header %}
     <div class="row">
-        <div class="col-6">
+        <div class="col-5">
             <h1>{{ join_in.name }}</h1>
         </div>
-        <div class="col-6 dates">
+        <div class="col-2 balance">
+
+            <span>Balance: {% include "../includes/amount.html" with amount=join_in_balance %}</span>
+        </div>
+        <div class="col-5 dates">
             <form action="{{ join_in.slug }}" id="join-in-form">
                 <input type="hidden" value="{{ for_timestamp }}" id="for_timestamp_input" name="for_timestamp" />
                 <a href="#" class="submit-join-in-form day-before">
@@ -48,7 +52,7 @@
                      alt="User img of {{ user.first_name }}">
                 <div class="card-body">
                     <h5 class="card-title">{{ user.first_name }}</h5>
-                    <span class="balance {% if user.balance < 0 %}text-danger{% endif %}">€ {{ user.balance|floatformat:"2g" }}</span>
+                    {% include "../includes/amount.html" with amount=user.balance %}
                 </div>
             </div>
         {% endfor %}

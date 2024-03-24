@@ -50,6 +50,7 @@ class JoinView(JoinInBaseView):
         context = super().get_context_data(**kwargs)
         for_datetime = self.get_for_datetime()
         context['join_in'] = self.join_in
+        context['join_in_balance'] = self.join_in.balance(for_datetime)
         context['for_timestamp'] = datetime_to_millis(for_datetime)
         users = self.join_in.get_users(for_datetime)
         for user in users:
