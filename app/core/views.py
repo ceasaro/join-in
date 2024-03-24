@@ -35,16 +35,20 @@ class JoinInBaseView(TemplateView):
             self.join_in = JoinIn.objects.get(slug=slug)
         return self.join_in
 
+    def get_for_datetime(self):
+        try:
+            for_datetime = millis_to_datetime(int(self.request.GET.get('for_timestamp')))
+        except (ParserError, TypeError, ValueError):
+            for_datetime = utc_now()
+        return for_datetime
+
 
 class JoinView(JoinInBaseView):
     template_name = "join_in/join.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        try:
-            for_datetime = millis_to_datetime(int(self.request.GET.get('for_timestamp')))
-        except (ParserError, TypeError, ValueError):
-            for_datetime = utc_now()
+        for_datetime = self.get_for_datetime()
         context['join_in'] = self.join_in
         context['for_timestamp'] = datetime_to_millis(for_datetime)
         users = self.join_in.get_users(for_datetime)
@@ -63,12 +67,12 @@ class UserJoinJSONView(JSONResponseMixin, JoinInBaseView):
 
     def get_json_data(self, context):
         user = self.get_user()
-        for_datetime = utc_now()
-        self.join_in.toggle_fee(user)
+        for_datetime = self.get_for_datetime()
+        self.join_in.toggle_fee(user, for_datetime)
         return {
             'user': {
                 'email': user.email,
-                'balance': self.join_in.balance(user),
+                'balance': self.join_in.balance(user, for_datetime),
                 'joined_period': user.has_joined(self.join_in, for_datetime)
             }
         }

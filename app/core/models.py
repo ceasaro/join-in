@@ -34,13 +34,13 @@ class JoinIn(BaseModel):
         try:
             self.add_fee(user, for_datetime)
         except JoinInException:
-            self.revert_loan(Loan.objects.get(join_in=self, user=user, created__day=for_datetime.day))
+            self.revert_loan(Loan.objects.get(join_in=self, user=user, datetime__day=for_datetime.day))
 
     def add_fee(self, user, for_datetime=utc_now()):
         if self.membership_period == self.DAILY:
-            if Loan.objects.filter(join_in=self, user=user, created__day=for_datetime.day).exists():
+            if Loan.objects.filter(join_in=self, user=user, datetime__day=for_datetime.day).exists():
                 raise JoinInException(f"{user} already added the fee for this period")
-        return Loan.objects.create(join_in=self, user=user, amount=self.fee)
+        return Loan.objects.create(join_in=self, user=user, amount=self.fee, datetime=for_datetime)
 
     def revert_loan(self, loan):
         if loan.join_in != self:
@@ -48,7 +48,7 @@ class JoinIn(BaseModel):
         loan.delete()
 
     def payment(self, user, amount):
-        return Payment.objects.create(join_in=self, user=user, amount=amount)
+        return Payment.objects.create(join_in=self, user=user, amount=amount, datetime=utc_now())
 
     def revert_payment(self, payment):
         if payment.join_in is not self:
@@ -57,8 +57,8 @@ class JoinIn(BaseModel):
         payment.delete()
 
     def balance(self, user, for_datetime):
-        loans = Loan.objects.filter(join_in=self, user=user, created__lte=for_datetime).aggregate(models.Sum('amount'))
-        payments = Payment.objects.filter(join_in=self, user=user, created__lte=for_datetime).aggregate(models.Sum('amount'))
+        loans = Loan.objects.filter(join_in=self, user=user, datetime__lte=for_datetime).aggregate(models.Sum('amount'))
+        payments = Payment.objects.filter(join_in=self, user=user, datetime__lte=for_datetime).aggregate(models.Sum('amount'))
         return (payments['amount__sum'] or Decimal(0.0)) - (loans['amount__sum'] or Decimal(0.0))
 
     @property
@@ -88,9 +88,11 @@ class Loan(BaseModel):
     join_in = models.ForeignKey(JoinIn, on_delete=models.CASCADE, related_name="loans")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="loans")
     amount = models.DecimalField(max_digits=10, decimal_places=4)
+    datetime = models.DateTimeField()
 
 
 class Payment(BaseModel):
     join_in = models.ForeignKey(JoinIn, on_delete=models.CASCADE, related_name="payments")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payments")
     amount = models.DecimalField(max_digits=10, decimal_places=4)
+    datetime = models.DateTimeField()
