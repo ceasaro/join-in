@@ -55,9 +55,46 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ user.first_name }}</h5>
                     {% include "../includes/amount.html" with amount=user.balance %}
+                    <a href="#" class="user-pay-link" data-toggle="modal" data-target="#exampleModal">
+                        <span class="user-pay"><i class="bi bi-credit-card"></i></span>
+                    </a>
                 </div>
             </div>
         {% endfor %}
     </div>
+
 {% endblock content %}
 
+{% block extra_html %}
+<!-- Modal -->
+    <div class="modal" id="userPayFormModal" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Payment
+                        <span id="payment_user_name">User: </span>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ join_in.slug }}/pay" method="post" id="payment-form">
+                    {% csrf_token %}
+                    <input type="hidden" id="user-form-email" name="user_email"/>
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                          <span class="input-group-text" id="basic-addon1">€</span>
+                          <input type="number" id="user-form-payment" name="amount" class="form-control" aria-label="Username" aria-describedby="basic-addon1" value="0">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                        </button>
+                        <button type="submit" class="btn btn-primary">Pay</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock extra_html %}

@@ -24,10 +24,18 @@ $(".user-card").on("click", function () {
       } else {
         $balanceElement.removeClass("text-danger");
       }
-
     },
     dataType: "json"
   });
+});
+
+$(".user-pay-link").on("click", function(event) {
+  event.stopPropagation();
+  let $userCard = $(this).closest('.user-card');
+  let $userPayFormModal = $('#userPayFormModal');
+  $userPayFormModal.find('#payment_user_name').html($userCard.data("user-email"));
+  $userPayFormModal.find('#user-form-email').val($userCard.data("user-email"));
+  $userPayFormModal.modal('show');
 });
 
 $(".submit-join-in-form").on("click", function () {
@@ -46,5 +54,6 @@ $(".submit-join-in-form").on("click", function () {
   $("#join-in-form").trigger("submit");
 });
 
+// $('#userPayFormModal').modal({ show: false});
 
 $("#for_date").html(for_date.toDateString());

@@ -1,5 +1,7 @@
 from dateutil.parser import ParserError
 from django.contrib.auth import get_user_model
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.views.generic import TemplateView
 
 from core.mixins import JSONResponseMixin
@@ -24,10 +26,6 @@ class JoinInBaseView(TemplateView):
         self.get_join_in(slug)
         return super().get(request, *args, **kwargs)
 
-    def post(self, request, *args, slug=None, **kwargs):
-        self.get_join_in(slug)
-        return super().get(request, *args, **kwargs)
-
     def get_join_in(self, slug):
         if slug is None:
             self.join_in = JoinIn.objects.filter().get()
@@ -43,7 +41,7 @@ class JoinInBaseView(TemplateView):
         return for_datetime
 
 
-class JoinView(JoinInBaseView):
+class JoinInView(JoinInBaseView):
     template_name = "join_in/join.html"
 
     def get_context_data(self, **kwargs):
@@ -58,6 +56,17 @@ class JoinView(JoinInBaseView):
             user.balance = self.join_in.balance(for_datetime, user)
         context['users'] = users
         return context
+
+
+class PayView(JoinInBaseView):
+
+    def post(self, request, slug=None, **kwargs):
+        join_in = self.get_join_in(slug)
+        user_email = request.POST.get('user_email')
+        user = User.objects.get(email=user_email)
+        amount = request.POST.get('amount')
+        join_in.payment(user, amount)
+        return redirect(f"/{join_in.slug}")
 
 
 class UserJoinJSONView(JSONResponseMixin, JoinInBaseView):

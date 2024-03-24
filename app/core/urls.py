@@ -17,10 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from core.views import HomeView, JoinView
+from core.views import HomeView, JoinInView, PayView
 
 urlpatterns = [
-    path("join/<slug:slug>", JoinView.as_view(), name="join-in-home"),
+    path("<slug:slug>", JoinInView.as_view(), name="join-in-home"),
+    path("<slug:slug>/pay", PayView.as_view(), name="join-in-payment"),
     path("", HomeView.as_view(), name="home"),
     path("admin/", admin.site.urls),
 ]
